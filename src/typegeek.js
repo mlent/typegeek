@@ -20,7 +20,20 @@ define([], function() {
 
 	typegeek.prototype.handleKeypress = function(e) {
 
-		var key = '';
+		// Temporary -- lets us type lowercase w/o modifier keys
+		var k = this.codes.keyCodes[e.keyCode];
+		var key = this.codes.dictionary[k];
+
+		if (key !== undefined && e.type) {
+			e.preventDefault();
+			
+			if (e.type === 'keyup')
+				this.el.value == this.el.value ? this.el.value += key : key;
+
+			return;
+		}
+
+		return;
 
 		if (typeof(key) === 'object' && key !== null) {
 			var on = this.keyMap[e.keyCode];
