@@ -56,11 +56,6 @@ define([], function() {
 		var combo = keys.map(function(key) {
 			return this.codes.keyCodes[key]; 
 		}.bind(this));
-
-		if (key.options)
-			this.convert(newKey, key.options);
-		else
-			return key;
 	}
 
 	/**
