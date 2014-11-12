@@ -1,5 +1,7 @@
 define(['src/dicts/grc'], function(GreekDict) {
 	
+	'use strict';
+
 	function typegeek(selector, options) {
 		/*jshint validthis:true */
 		if (typeof(selector) === 'string')
@@ -26,7 +28,7 @@ define(['src/dicts/grc'], function(GreekDict) {
 
 		this.container.appendChild(this.el);
 		this.container.appendChild(this.menu);
-	}
+	};
 
 	/**
 	 * Create some nice clickable buttons of available keys
@@ -136,7 +138,7 @@ define(['src/dicts/grc'], function(GreekDict) {
 
 		// Continue dereferencing key in sequence
 		if (keyEntry.options && !lastKey)
-			return this.convert(keyMap, index, keyEntry.options)
+			return this.convert(keyMap, index, keyEntry.options);
 		else
 			return keyEntry;
 	};

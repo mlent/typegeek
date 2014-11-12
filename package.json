@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mlent/typegeek",
   "devDependencies": {
+    "grunt-contrib-cssmin": "^0.10.0",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-uglify": "^0.6.0"
   }

@@ -16,12 +16,20 @@ module.exports = function(grunt) {
 					document: true
 				}
 			}
+		},
+		cssmin: {
+			compress: {
+				files: {
+					'dist/<%= pkg.name %>.min.css': ['src/<%= pkg.name %>.css']
+				}
+			}
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
 
-	grunt.registerTask('default', ['jshint', 'uglify']);
+	grunt.registerTask('default', ['jshint', 'uglify', 'cssmin']);
 	grunt.registerTask('test', ['jshint']);
 };
