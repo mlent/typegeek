@@ -9,33 +9,75 @@ define([], function() {
 		else
 			this.el = selector;
 
+		this.render();
 		this.el.addEventListener('keydown', this.handleKeypress.bind(this));	
-		this.el.addEventListener('keyup', this.handleKeypress.bind(this));	
 
 		return this;
 	}
+
+	typegeek.prototype.render = function() {
+		this.container = document.createElement('div');
+		this.container.className = 'typegeek';
+
+		this.menu = document.createElement('ul');
+		this.insertAfter(this.container, this.el);
+
+		this.container.appendChild(this.el);
+		this.container.appendChild(this.menu);
+	}
+
+	typegeek.prototype.renderKeys = function(keys) {
+		this.menu.innerHTML = '';
+		var that = this;
+
+		if (keys.length === 0) return;
+
+		Object.keys(keys.options).forEach(function(k) {
+			var el = document.createElement('li');
+			var a = document.createElement('a');
+			a.setAttribute('href', '#');
+			
+			// Decide on look of key
+			var value = keys.options[k];
+			a.innerHTML = typeof value === 'object' ? k : keys.options[k] + '<span>' + k + '</span>';
+			a.setAttribute('data-keycode', this.codes.keyCodes.getKeyByValue(k)); 
+			a.addEventListener('click', this.handleKeypress.bind(this));
+
+			// Append key
+			el.appendChild(a);
+			that.menu.appendChild(el);
+
+		}.bind(this));
+	};
 	
 	// Keep track of multiple keys pressed
 	typegeek.prototype.keyMap = [];
 
 	typegeek.prototype.handleKeypress = function(e) {
+		// If we're getting a click event and not a keypress, get keycode from element
+		var code = e.keyCode || e.target.dataset.keycode;
 
 		// It's not a key we capture, so return
-		var name = this.codes.keyCodes[e.keyCode];
+		var name = this.codes.keyCodes[code];
 		if (!name) return;
 
-		var toggle = this.keyMap.indexOf(name) !== -1 && (e.type == 'keydown');
+		var toggle = this.keyMap.indexOf(name) !== -1;
 
-		if (e.type == 'keyup' ? !toggle : toggle) {
+		if (toggle) {
 			var i = this.keyMap.indexOf(name);
 			this.keyMap = this.keyMap.splice(i, 1);
 		}
-		else if (e.type == 'keydown') {
+		else {
 			this.keyMap.push(name);
 		}
 
-		if (this.keyMap.length === 0) return;
+		// No keys in cache, so clear menu and return
+		if (this.keyMap.length === 0) {
+			this.renderKeys([]);
+			return;
+		}
 
+		// Dereference key and see whether we get a character or more options
 		var key = this.convert(this.keyMap, 0, this.codes.dictionary);
 
 		if (!key) return;
@@ -43,13 +85,14 @@ define([], function() {
 		e.preventDefault();
 
 		if (key.options) {
-			this.showOptions(key);
+			this.renderKeys(key);
 			return;
 		}
 
 		// Type something, clear keyMap
 		this.el.value == this.el.value ? this.el.value += key : key;
 		this.keyMap = [];
+		this.renderKeys([]);
 		return false;
 	};
 
@@ -75,17 +118,31 @@ define([], function() {
 	 */
 	typegeek.prototype.showOptions = function(key) {
 		var options = Object.keys(key.options).map(function(k) {
-			return key.options[k];
-		}).join(', ');
+			if (typeof key.options[k] === 'object')
+				return k;
 
-		console.log(options);
+			return key.options[k];
+		});
+
 		return options;
+	};
+
+	typegeek.prototype.insertAfter = function(newNode, referenceNode) {
+		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+	};
+
+	Object.prototype.getKeyByValue = function(value) {
+		for (var prop in this) {
+			if (this.hasOwnProperty(prop)) {
+				if (this[prop] === value)
+					return prop;
+			}
+		}
 	};
 
 	typegeek.prototype.codes = {
 		"keyCodes": {
-			"16": "shift",
-			"20" : "capslock",
+			"16": "⇧",
 			"65": "a",
 			"66": "b",
 			"67": "c",
@@ -112,17 +169,17 @@ define([], function() {
 			"88": "x",
 			"89": "y",
 			"90": "z",
-			"186": "semi-colon",
-			"187": "equal-sign",
-			"188": "comma",
-			"189": "dash",
-			"190": "period",
-			"191": "forward-slash",
-			"192": "backtick",
-			"219": "open-bracket",
-			"220": "back-slash",
-			"221": "closing-bracket",
-			"222": "single-quote"
+			"186": ";",
+			"187": "=",
+			"188": ",",
+			"189": "-",
+			"190": ".",
+			"191": "/",
+			"192": "`",
+			"219": "[",
+			"220": "\\",
+			"221": "]",
+			"222": "'"
 		},
 		"dictionary": {
 			"a" : "α",
@@ -150,7 +207,7 @@ define([], function() {
 			"x" : "χ",
 			"c" : "ψ",
 			"v" : "ω",
-			"shift": {
+			"⇧": {
 				"options": {
 					"a" : "Α",
 					"b" : "Β",
@@ -179,7 +236,7 @@ define([], function() {
 					"v" : "Ω"	
 				}
 			},
-			"equal-sign": {
+			"=": {
 				"options": {
 					"a": "ᾶ",
 					"h": "ῆ",
@@ -188,20 +245,20 @@ define([], function() {
 					"v": "ῶ"
 				}
 			},
-			"comma": {
+			",": {
 				"options": {
-					"single-quote": {
+					"'": {
 						"options": {
 							"a": "ᾴ",
 							"h": "",
 							"v": ""
 						},
-						"backtick": {
+						"`": {
 							"options": {
 								"a": "ᾲ"
 							}
 						},
-						"equal-sign": {
+						"=": {
 							"options": {
 								"a": "ᾷ"
 							}
@@ -212,9 +269,9 @@ define([], function() {
 					"v": "ῳ"
 				}
 			},
-			"backtick": {
+			"`": {
 				"options": {
-					"shift": {
+					"⇧": {
 						"options": {
 							"a": "Ὰ",
 							"h": "Ἢ",
@@ -233,9 +290,9 @@ define([], function() {
 					"v": "ὼ"
 				}
 			},
-			"single-quote": {
+			"'": {
 				"options": {
-					"shift": {
+					"⇧": {
 						"options": {
 							"a": "Ά"
 						}
