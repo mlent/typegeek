@@ -20,24 +20,29 @@ define([], function() {
 
 	typegeek.prototype.handleKeypress = function(e) {
 
-		var key = this.convert(key, this.keyMap); 
+		// It's not a key we capture, so return
+		var name = this.codes.keyCodes[e.keyCode];
+		if (!name) return;
 
-		// Determine if it's a dead key
-		if (typeof(key) === 'object' && key !== null) {
-			var on = this.keyMap[e.keyCode];
-			this.keyMap[e.keyCode] = e.type == 'keydown' ? !on : on;
+		var toggle = this.keyMap.indexOf(name) !== -1 && (e.type == 'keydown');
+
+		if (e.type == 'keyup' ? !toggle : toggle) {
+			var i = this.keyMap.indexOf(name);
+			this.keyMap = this.keyMap.splice(i, 1);
 		}
-		else {
-			this.keyMap[e.keyCode] = e.type == 'keydown';
+		else if (e.type == 'keydown') {
+			this.keyMap.push(name);
 		}
 
-		var key = this.convert(this.keyMap, this.codes.dictionary);
+		if (this.keyMap.length === 0) return;
+
+		var key = this.convert(this.keyMap, 0, this.codes.dictionary);
 
 		if (!key) return;
 
 		e.preventDefault();
 
-		if (key.options && e.type === 'keyup') {
+		if (key.options) {
 			this.showOptions(key);
 			return;
 		}
@@ -46,27 +51,35 @@ define([], function() {
 		this.el.value == this.el.value ? this.el.value += key : key;
 		this.keyMap = [];
 		return false;
-	}
+	};
 
 	/**
 	 * Hunts through dictionary for matching keys.
 	 * key - current key
 	 */
-	typegeek.prototype.convert = function(key, dict) {
-		var keys = Object.keys(this.keyMap);
-		var combo = keys.map(function(key) {
-			return this.codes.keyCodes[key]; 
-		}.bind(this));
+	typegeek.prototype.convert = function(keyMap, index, dictionary) {
 
-	}
+		var keyName = keyMap[index];
+		var lastKey = keyMap.length - 1 === index;
+		var keyEntry = dictionary[keyName];
+		index++;
+
+		if (keyEntry.options && !lastKey)
+			return this.convert(keyMap, index, keyEntry.options)
+		else
+			return keyEntry;
+	};
 
 	/**
 	 * Accepts a dictionary entry for the key.
 	 */
 	typegeek.prototype.showOptions = function(key) {
-		return Object.keys(key.options).map(function(k) {
+		var options = Object.keys(key.options).map(function(k) {
 			return key.options[k];
 		}).join(', ');
+
+		console.log(options);
+		return options;
 	};
 
 	typegeek.prototype.codes = {
