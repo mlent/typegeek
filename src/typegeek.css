@@ -1,5 +1,5 @@
 .typegeek input[type="text"] {
-	font-family: serif;
+	font-family: -webkit-pictograph, serif;
 	font-size: 36px;
 }
 .typegeek ul {
@@ -16,7 +16,7 @@
 	background-color: #444;
 	padding: 5px 10px 10px 10px;
 	color: #F5F5F5;
-	font-family: serif;
+	font-family: -webkit-pictograph, serif;
 	font-size: 26px;
 	border-radius: 2px;
 	position: relative;

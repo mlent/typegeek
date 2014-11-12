@@ -1,4 +1,4 @@
-define([], function() {
+define(['src/dicts/grc'], function(GreekDict) {
 	
 	function typegeek(selector, options) {
 		/*jshint validthis:true */
@@ -7,6 +7,7 @@ define([], function() {
 		else
 			this.el = selector;
 
+		this.dict = GreekDict;
 		this.render();
 		this.el.addEventListener('keydown', this.handleKeypress.bind(this));	
 
@@ -43,7 +44,7 @@ define([], function() {
 			// Decide on look of key
 			var value = keys.options[k];
 			a.innerHTML = typeof value === 'object' ? k : keys.options[k] + '<span>' + k + '</span>';
-			a.setAttribute('data-keycode', this.getKeyByValue(this.codes.keyCodes, k)); 
+			a.setAttribute('data-keycode', this.getKeyByValue(this.dict.keyCodes, k)); 
 			a.addEventListener('click', this.handleKeypress.bind(this));
 
 			// Append key
@@ -68,7 +69,7 @@ define([], function() {
 		}
 
 		// It's not a key we capture, so return
-		var name = this.codes.keyCodes[code];
+		var name = this.dict.keyCodes[code];
 		if (!name) return;
 
 		var toggle = this.keyMap.indexOf(name) !== -1;
@@ -89,7 +90,7 @@ define([], function() {
 		}
 
 		// Dereference key and see whether we get a character or more options
-		var key = this.convert(this.keyMap, 0, this.codes.dictionary);
+		var key = this.convert(this.keyMap, 0, this.dict.dictionary);
 
 		// If we didn't get a key, they picked something not in any sequence
 		if (!key) {
@@ -166,307 +167,6 @@ define([], function() {
 			if (obj.hasOwnProperty(prop)) {
 				if (obj[prop] === value)
 					return prop;
-			}
-		}
-	};
-
-	typegeek.prototype.codes = {
-		// Allows us to insert-in-order key combinations for lookup
-		// Based on how we organized our dictionary. Here: Caps, Breathing, Accent, Subscript.
-		"keyPriorities": ["⇧", "[", "]", "=", "`", "'", ","],
-		"keyCodes": {
-			"16": "⇧",
-			"219": "[",
-			"221": "]",
-			"187": "=",
-			"192": "`",
-			"222": "'",
-			"188": ",",
-			"65": "a",
-			"66": "b",
-			"67": "c",
-			"68": "d",
-			"69": "e",
-			"70": "f",
-			"71": "g",
-			"72": "h",
-			"73": "i",
-			"74": "j",
-			"75": "k",
-			"76": "l",
-			"77": "m",
-			"78": "n",
-			"79": "o",
-			"80": "p",
-			"81": "q",
-			"82": "r",
-			"83": "s",
-			"84": "t",
-			"85": "u",
-			"86": "w",
-			"87": "w",
-			"88": "x",
-			"89": "y",
-			"90": "z"
-		},
-		"dictionary": {
-			"a" : "α",
-			"b" : "β",
-			"g" : "γ",
-			"d" : "δ",
-			"e" : "ε",
-			"z" : "ζ",
-			"h" : "η",
-			"u" : "θ",
-			"i" : "ι",
-			"k" : "κ",
-			"l" : "λ",
-			"m" : "μ",
-			"n" : "ν",
-			"j" : "ξ",
-			"o" : "ο",
-			"p" : "π",
-			"r" : "ρ",
-			"s" : "σ",
-			"w" : "ς",
-			"t" : "τ",
-			"y" : "υ",
-			"f" : "φ",
-			"x" : "χ",
-			"c" : "ψ",
-			"w" : "ω",
-			"⇧": {
-				"options": {
-					"a" : "Α",
-					"b" : "Β",
-					"g" : "Γ",
-					"d" : "Δ",
-					"e" : "Ε",
-					"z" : "Ζ",
-					"h" : "Η",
-					"u" : "Θ",
-					"i" : "Ι",
-					"k" : "Κ",
-					"l" : "Λ",
-					"m" : "Μ",
-					"n" : "Ν",
-					"j" : "Ξ",
-					"o" : "Ο",
-					"p" : "Π",
-					"r" : "Ρ",
-					"s" : "Σ",
-					"w" : "Σ",
-					"t" : "Τ",
-					"y" : "Υ",
-					"f" : "Φ",
-					"x" : "Χ",
-					"c" : "Ψ",
-					"w" : "Ω"	
-				}
-			},
-			"[": {
-				"options": {
-					"a": "ἁ",
-					"e": "ἑ",
-					"h": "ἡ",
-					"i": "ἱ",
-					"o": "ὁ",
-					"u": "ὑ",
-					"w": "ὡ",
-					"r": "ῥ",
-
-					"`": {
-						"options": {
-							"a": "ἃ",
-							"e": "ἓ",
-							"h": "ἣ",
-							"i": "ἳ",
-							"o": "ὃ",
-							"u": "ὓ",
-							"w": "ὣ",
-
-							",": {
-								"options": {
-									"a": "ᾃ",
-									"h": "ᾓ",
-									"w": "ᾣ"
-								}
-							}
-						}
-					},
-					"'": {
-						"options": {
-							"a": "ἅ",
-							"e": "ἕ",
-							"h": "ἥ",
-							"i": "ἵ",
-							"o": "ὅ",
-							"u": "ὕ",
-							"w": "ὥ",
-
-							",": {
-								"options": {
-									"a": "ᾅ",
-									"h": "ᾕ",
-									"w": "ᾥ"
-								}
-							}
-						}
-					},
-					"=": {
-						"options": {
-							"a": "ἇ",
-							"h": "ἧ",
-							"i": "ἷ",
-							"u": "ὗ",
-							"w": "ὧ",
-
-							",": {
-								"options": {
-									"a": "ᾇ",
-									"h": "ᾗ",
-									"w": "ᾧ"
-								}
-							}
-						}
-					},
-				}
-			},
-			"]": {
-				"options": {
-					"a": "ἀ",
-					"e": "ἐ",
-					"h": "ἠ",
-					"i": "ἰ",
-					"o": "ὀ",
-					"u": "ὐ",
-					"w": "ὠ",
-
-					"`": {
-						"options": {
-							"a": "ἂ",
-							"e": "ἒ",
-							"h": "ἢ",
-							"i": "ἲ",
-							"o": "ὂ",
-							"u": "ὒ",
-							"w": "ὢ",
-
-							",": {
-								"options": {
-									"a": "ᾂ",
-									"h": "ᾒ",
-									"w": "ᾢ"
-								}
-							}
-						}
-					},
-					"'": {
-						"options": {
-							"a": "ἄ",
-							"e": "ἔ",
-							"h": "ἤ",
-							"i": "ἴ",
-							"o": "ὄ",
-							"u": "ὔ",
-							"w": "ὤ",
-
-							",": {
-								"options": {
-									"a": "ᾄ",
-									"h": "ᾔ",
-									"w": "ᾤ"
-								}
-							}
-						}
-					},
-					"=": {
-						"options": {
-							"a": "ἆ",
-							"h": "ἦ",
-							"i": "ἶ",
-							"u": "ὖ",
-							"w": "ὦ",
-
-							",": {
-								"options": {
-									"a": "ᾆ",
-									"h": "ᾖ",
-									"w": "ᾦ"
-								}
-							}
-						}
-					},
-					",": {
-						"options": {
-							"a": "ᾀ",
-							"h": "ᾐ",
-							"w": "ᾠ"
-						}
-					}
-				}
-			},
-			",": {
-				"options": {
-					"a": "ᾳ",
-					"h": "ῃ",
-					"w": "ῳ",
-					"s": "ς"
-				}
-			},
-			"=": {
-				"options": {
-					"a": "ᾶ",
-					"h": "ῆ",
-					"i": "ῖ",
-					"u": "ῦ",
-					"w": "ῶ",
-
-					",": {
-						"options": {
-							"a": "ᾷ",
-							"h": "ῇ",
-							"w": "ῷ"
-						}
-					}
-				}
-			},
-			"`": {
-				"options": {
-					"a": "ὰ",
-					"h": "ὴ",
-					"e": "ὲ",
-					"i": "ὶ",
-					"o": "ὸ",
-					"w": "ὼ",
-
-					",": {
-						"options": {
-							"a": "ᾲ",
-							"h": "ῂ",
-							"w": "ῲ"
-						}
-					}
-				}
-			},
-			"'": {
-				"options": {
-					"a": "ά",
-					"h": "ή",
-					"e": "έ",
-					"i": "ί",
-					"o": "ό",
-					"u": "ύ",
-					"w": "ώ",
-
-					",": {
-						"options": {
-							"a": "ᾴ",
-							"h": "ῄ",
-							"w": "ῴ"
-						}
-					}
-				}
 			}
 		}
 	};
