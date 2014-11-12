@@ -107,7 +107,7 @@ define(['src/dicts/grc'], function(GreekDict) {
 		}
 
 		// Type something!
-		this.el.value == this.el.value ? this.el.value += key : key;
+		this.el.value = this.el.value ? this.el.value += key : key;
 		this.clearUI();
 		return false;
 	};
