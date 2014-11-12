@@ -73,10 +73,13 @@ define([], function() {
 
 		var toggle = this.keyMap.indexOf(name) !== -1;
 
-		if (toggle)
+		if (toggle) {
 			this.keyMap.splice(this.keyMap.indexOf(name), 1);
-		else
+		}
+		else {
+			// TODO: Insert the key by priority: shift, breathing, accent, subscript, letter
 			this.keyMap.push(name);
+		}
 
 		// No keys in cache, so clear menu and return
 		if (this.keyMap.length === 0) {
@@ -168,8 +171,17 @@ define([], function() {
 	};
 
 	typegeek.prototype.codes = {
+		// Allows us to insert-in-order key combinations for lookup
+		// Based on how we organized our dictionary. Here: Caps, Breathing, Accent, Subscript.
+		"keyPriorities": ["⇧", "[", "]", "=", "`", "'", ","],
 		"keyCodes": {
 			"16": "⇧",
+			"219": "[",
+			"221": "]",
+			"187": "=",
+			"192": "`",
+			"222": "'",
+			"188": ",",
 			"65": "a",
 			"66": "b",
 			"67": "c",
@@ -195,13 +207,7 @@ define([], function() {
 			"87": "w",
 			"88": "x",
 			"89": "y",
-			"90": "z",
-			"187": "=",
-			"188": ",",
-			"192": "`",
-			"219": "[",
-			"221": "]",
-			"222": "'"
+			"90": "z"
 		},
 		"dictionary": {
 			"a" : "α",
@@ -267,6 +273,7 @@ define([], function() {
 					"o": "ὁ",
 					"u": "ὑ",
 					"w": "ὡ",
+					"r": "ῥ",
 
 					"`": {
 						"options": {
@@ -305,7 +312,24 @@ define([], function() {
 								}
 							}
 						}
-					}
+					},
+					"=": {
+						"options": {
+							"a": "ἇ",
+							"h": "ἧ",
+							"i": "ἷ",
+							"u": "ὗ",
+							"w": "ὧ",
+
+							",": {
+								"options": {
+									"a": "ᾇ",
+									"h": "ᾗ",
+									"w": "ᾧ"
+								}
+							}
+						}
+					},
 				}
 			},
 			"]": {
@@ -320,59 +344,64 @@ define([], function() {
 
 					"`": {
 						"options": {
-							"a": "",
-							"e": "",
-							"h": "",
-							"i": "",
-							"o": "",
-							"u": "",
-							"w": "",
+							"a": "ἂ",
+							"e": "ἒ",
+							"h": "ἢ",
+							"i": "ἲ",
+							"o": "ὂ",
+							"u": "ὒ",
+							"w": "ὢ",
 
 							",": {
 								"options": {
-									"a": "",
-									"e": "",
-									"h": "",
-									"i": "",
-									"o": "",
-									"u": "",
-									"w": ""
+									"a": "ᾂ",
+									"h": "ᾒ",
+									"w": "ᾢ"
 								}
 							}
 						}
 					},
 					"'": {
 						"options": {
-							"a": "",
-							"e": "",
-							"h": "",
-							"i": "",
-							"o": "",
-							"u": "",
-							"w": "",
+							"a": "ἄ",
+							"e": "ἔ",
+							"h": "ἤ",
+							"i": "ἴ",
+							"o": "ὄ",
+							"u": "ὔ",
+							"w": "ὤ",
 
 							",": {
 								"options": {
-									"a": "",
-									"e": "",
-									"h": "",
-									"i": "",
-									"o": "",
-									"u": "",
-									"w": ""
+									"a": "ᾄ",
+									"h": "ᾔ",
+									"w": "ᾤ"
+								}
+							}
+						}
+					},
+					"=": {
+						"options": {
+							"a": "ἆ",
+							"h": "ἦ",
+							"i": "ἶ",
+							"u": "ὖ",
+							"w": "ὦ",
+
+							",": {
+								"options": {
+									"a": "ᾆ",
+									"h": "ᾖ",
+									"w": "ᾦ"
 								}
 							}
 						}
 					},
 					",": {
 						"options": {
-							"a": "",
-							"e": "",
-							"h": "",
-							"i": "",
-							"o": "",
-							"u": "",
-							"w": ""
+							"a": "ᾀ",
+							"h": "ᾐ",
+							"w": "ᾠ"
 						}
 					}
 				}
@@ -395,13 +424,9 @@ define([], function() {
 
 					",": {
 						"options": {
-							"a": "",
-							"e": "",
-							"h": "",
-							"i": "",
-							"o": "",
-							"u": "",
-							"w": ""
+							"a": "ᾷ",
+							"h": "ῇ",
+							"w": "ῷ"
 						}
 					}
 				}
@@ -417,13 +442,9 @@ define([], function() {
 
 					",": {
 						"options": {
-							"a": "",
-							"e": "",
-							"h": "",
-							"i": "",
-							"o": "",
-							"u": "",
-							"w": ""
+							"a": "ᾲ",
+							"h": "ῂ",
+							"w": "ῲ"
 						}
 					}
 				}
@@ -440,13 +461,9 @@ define([], function() {
 
 					",": {
 						"options": {
-							"a": "",
-							"e": "",
-							"h": "",
-							"i": "",
-							"o": "",
-							"u": "",
-							"w": ""
+							"a": "ᾴ",
+							"h": "ῄ",
+							"w": "ῴ"
 						}
 					}
 				}
