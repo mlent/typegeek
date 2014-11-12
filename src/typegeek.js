@@ -20,21 +20,9 @@ define([], function() {
 
 	typegeek.prototype.handleKeypress = function(e) {
 
-		// Temporary -- lets us type lowercase w/o modifier keys
-		var k = this.codes.keyCodes[e.keyCode];
-		var key = this.codes.dictionary[k];
+		var key = this.convert(key, this.keyMap); 
 
-		if (key !== undefined && e.type) {
-			e.preventDefault();
-			
-			if (e.type === 'keyup')
-				this.el.value == this.el.value ? this.el.value += key : key;
-
-			return;
-		}
-
-		return;
-
+		// Determine if it's a dead key
 		if (typeof(key) === 'object' && key !== null) {
 			var on = this.keyMap[e.keyCode];
 			this.keyMap[e.keyCode] = e.type == 'keydown' ? !on : on;
@@ -64,11 +52,12 @@ define([], function() {
 	 * Hunts through dictionary for matching keys.
 	 * key - current key
 	 */
-	typegeek.prototype.convert = function(key, results) {
+	typegeek.prototype.convert = function(key, dict) {
 		var keys = Object.keys(this.keyMap);
 		var combo = keys.map(function(key) {
 			return this.codes.keyCodes[key]; 
 		}.bind(this));
+
 	}
 
 	/**
