@@ -1,7 +1,5 @@
 define([], function() {
 	
-	'use strict';
-
 	function typegeek(selector, options) {
 		/*jshint validthis:true */
 		if (typeof(selector) === 'string')
@@ -15,6 +13,9 @@ define([], function() {
 		return this;
 	}
 
+	/**
+	 * Wraps the text input field in a div and puts <ul> below
+	 */
 	typegeek.prototype.render = function() {
 		this.container = document.createElement('div');
 		this.container.className = 'typegeek';
@@ -26,9 +27,11 @@ define([], function() {
 		this.container.appendChild(this.menu);
 	}
 
+	/**
+	 * Create some nice clickable buttons of available keys
+	 */
 	typegeek.prototype.renderKeys = function(keys) {
 		this.menu.innerHTML = '';
-		var that = this;
 
 		if (keys.length === 0) return;
 
@@ -45,7 +48,7 @@ define([], function() {
 
 			// Append key
 			el.appendChild(a);
-			that.menu.appendChild(el);
+			this.menu.appendChild(el);
 
 		}.bind(this));
 	};
@@ -54,8 +57,15 @@ define([], function() {
 	typegeek.prototype.keyMap = [];
 
 	typegeek.prototype.handleKeypress = function(e) {
+
 		// If we're getting a click event and not a keypress, get keycode from element
 		var code = e.keyCode || e.target.dataset.keycode;
+
+		// If they're escaping, clear menu and return
+		if (code === 27) {
+			this.clearUI();
+			return;
+		}
 
 		// It's not a key we capture, so return
 		var name = this.codes.keyCodes[code];
@@ -63,24 +73,27 @@ define([], function() {
 
 		var toggle = this.keyMap.indexOf(name) !== -1;
 
-		if (toggle) {
-			var i = this.keyMap.indexOf(name);
-			this.keyMap.splice(i, 1);
-		}
-		else {
+		if (toggle)
+			this.keyMap.splice(this.keyMap.indexOf(name), 1);
+		else
 			this.keyMap.push(name);
-		}
 
 		// No keys in cache, so clear menu and return
 		if (this.keyMap.length === 0) {
-			this.renderKeys([]);
+			e.preventDefault();
+			this.clearUI();
 			return;
 		}
 
 		// Dereference key and see whether we get a character or more options
 		var key = this.convert(this.keyMap, 0, this.codes.dictionary);
 
-		if (!key) return;
+		// If we didn't get a key, they picked something not in any sequence
+		if (!key) {
+			e.preventDefault();
+			this.clearUI();
+			return;
+		}
 
 		e.preventDefault();
 
@@ -89,16 +102,22 @@ define([], function() {
 			return;
 		}
 
-		// Type something, clear keyMap
+		// Type something!
 		this.el.value == this.el.value ? this.el.value += key : key;
-		this.keyMap = [];
-		this.renderKeys([]);
+		this.clearUI();
 		return false;
 	};
 
 	/**
+	 * Clear keyMap cache and render empty keys
+	 */
+	typegeek.prototype.clearUI = function() {
+		this.keyMap = [];
+		this.renderKeys([]);
+	};
+
+	/**
 	 * Hunts through dictionary for matching keys.
-	 * key - current key
 	 */
 	typegeek.prototype.convert = function(keyMap, index, dictionary) {
 
@@ -107,6 +126,11 @@ define([], function() {
 		var keyEntry = dictionary[keyName];
 		index++;
 
+		// They're in the middle of a sequence and picked a key that doesn't belong
+		if (!keyEntry)
+			return;
+
+		// Continue dereferencing key in sequence
 		if (keyEntry.options && !lastKey)
 			return this.convert(keyMap, index, keyEntry.options)
 		else
@@ -127,6 +151,9 @@ define([], function() {
 		return options;
 	};
 
+	/**
+	 * Shortcut function for inserting an HTML node after another in the DOM
+	 */
 	typegeek.prototype.insertAfter = function(newNode, referenceNode) {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	};
@@ -164,20 +191,15 @@ define([], function() {
 			"83": "s",
 			"84": "t",
 			"85": "u",
-			"86": "v",
+			"86": "w",
 			"87": "w",
 			"88": "x",
 			"89": "y",
 			"90": "z",
-			"186": ";",
 			"187": "=",
 			"188": ",",
-			"189": "-",
-			"190": ".",
-			"191": "/",
 			"192": "`",
 			"219": "[",
-			"220": "\\",
 			"221": "]",
 			"222": "'"
 		},
@@ -206,7 +228,7 @@ define([], function() {
 			"f" : "φ",
 			"x" : "χ",
 			"c" : "ψ",
-			"v" : "ω",
+			"w" : "ω",
 			"⇧": {
 				"options": {
 					"a" : "Α",
@@ -233,7 +255,134 @@ define([], function() {
 					"f" : "Φ",
 					"x" : "Χ",
 					"c" : "Ψ",
-					"v" : "Ω"	
+					"w" : "Ω"	
+				}
+			},
+			"[": {
+				"options": {
+					"a": "ἁ",
+					"e": "ἑ",
+					"h": "ἡ",
+					"i": "ἱ",
+					"o": "ὁ",
+					"u": "ὑ",
+					"w": "ὡ",
+
+					"`": {
+						"options": {
+							"a": "ἃ",
+							"e": "ἓ",
+							"h": "ἣ",
+							"i": "ἳ",
+							"o": "ὃ",
+							"u": "ὓ",
+							"w": "ὣ",
+
+							",": {
+								"options": {
+									"a": "ᾃ",
+									"h": "ᾓ",
+									"w": "ᾣ"
+								}
+							}
+						}
+					},
+					"'": {
+						"options": {
+							"a": "ἅ",
+							"e": "ἕ",
+							"h": "ἥ",
+							"i": "ἵ",
+							"o": "ὅ",
+							"u": "ὕ",
+							"w": "ὥ",
+
+							",": {
+								"options": {
+									"a": "ᾅ",
+									"h": "ᾕ",
+									"w": "ᾥ"
+								}
+							}
+						}
+					}
+				}
+			},
+			"]": {
+				"options": {
+					"a": "ἀ",
+					"e": "ἐ",
+					"h": "ἠ",
+					"i": "ἰ",
+					"o": "ὀ",
+					"u": "ὐ",
+					"w": "ὠ",
+
+					"`": {
+						"options": {
+							"a": "",
+							"e": "",
+							"h": "",
+							"i": "",
+							"o": "",
+							"u": "",
+							"w": "",
+
+							",": {
+								"options": {
+									"a": "",
+									"e": "",
+									"h": "",
+									"i": "",
+									"o": "",
+									"u": "",
+									"w": ""
+								}
+							}
+						}
+					},
+					"'": {
+						"options": {
+							"a": "",
+							"e": "",
+							"h": "",
+							"i": "",
+							"o": "",
+							"u": "",
+							"w": "",
+
+							",": {
+								"options": {
+									"a": "",
+									"e": "",
+									"h": "",
+									"i": "",
+									"o": "",
+									"u": "",
+									"w": ""
+								}
+							}
+						}
+					},
+					",": {
+						"options": {
+							"a": "",
+							"e": "",
+							"h": "",
+							"i": "",
+							"o": "",
+							"u": "",
+							"w": ""
+						}
+					}
+				}
+			},
+			",": {
+				"options": {
+					"a": "ᾳ",
+					"h": "ῃ",
+					"w": "ῳ",
+					"s": "ς"
 				}
 			},
 			"=": {
@@ -242,67 +391,64 @@ define([], function() {
 					"h": "ῆ",
 					"i": "ῖ",
 					"u": "ῦ",
-					"v": "ῶ"
-				}
-			},
-			",": {
-				"options": {
-					"'": {
+					"w": "ῶ",
+
+					",": {
 						"options": {
-							"a": "ᾴ",
+							"a": "",
+							"e": "",
 							"h": "",
-							"v": ""
-						},
-						"`": {
-							"options": {
-								"a": "ᾲ"
-							}
-						},
-						"=": {
-							"options": {
-								"a": "ᾷ"
-							}
+							"i": "",
+							"o": "",
+							"u": "",
+							"w": ""
 						}
-					},
-					"a": "ᾳ",
-					"h": "ῃ",
-					"v": "ῳ"
+					}
 				}
 			},
 			"`": {
 				"options": {
-					"⇧": {
-						"options": {
-							"a": "Ὰ",
-							"h": "Ἢ",
-							"e": "Ἒ",
-							"i": "Ἳ",
-							"o": "Ὸ",
-							"u": "Ὓ",
-							"v": "Ὼ"
-						}
-					},
 					"a": "ὰ",
 					"h": "ὴ",
 					"e": "ὲ",
 					"i": "ὶ",
 					"o": "ὸ",
-					"v": "ὼ"
+					"w": "ὼ",
+
+					",": {
+						"options": {
+							"a": "",
+							"e": "",
+							"h": "",
+							"i": "",
+							"o": "",
+							"u": "",
+							"w": ""
+						}
+					}
 				}
 			},
 			"'": {
 				"options": {
-					"⇧": {
-						"options": {
-							"a": "Ά"
-						}
-					},
 					"a": "ά",
 					"h": "ή",
 					"e": "έ",
 					"i": "ί",
 					"o": "ό",
-					"u": "ύ"
+					"u": "ύ",
+					"w": "ώ",
+
+					",": {
+						"options": {
+							"a": "",
+							"e": "",
+							"h": "",
+							"i": "",
+							"o": "",
+							"u": "",
+							"w": ""
+						}
+					}
 				}
 			}
 		}
