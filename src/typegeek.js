@@ -40,7 +40,7 @@ define([], function() {
 			// Decide on look of key
 			var value = keys.options[k];
 			a.innerHTML = typeof value === 'object' ? k : keys.options[k] + '<span>' + k + '</span>';
-			a.setAttribute('data-keycode', this.codes.keyCodes.getKeyByValue(k)); 
+			a.setAttribute('data-keycode', this.getKeyByValue(this.codes.keyCodes, k)); 
 			a.addEventListener('click', this.handleKeypress.bind(this));
 
 			// Append key
@@ -65,7 +65,7 @@ define([], function() {
 
 		if (toggle) {
 			var i = this.keyMap.indexOf(name);
-			this.keyMap = this.keyMap.splice(i, 1);
+			this.keyMap.splice(i, 1);
 		}
 		else {
 			this.keyMap.push(name);
@@ -131,10 +131,10 @@ define([], function() {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	};
 
-	Object.prototype.getKeyByValue = function(value) {
-		for (var prop in this) {
-			if (this.hasOwnProperty(prop)) {
-				if (this[prop] === value)
+	typegeek.prototype.getKeyByValue = function(obj, value) {
+		for (var prop in obj) {
+			if (obj.hasOwnProperty(prop)) {
+				if (obj[prop] === value)
 					return prop;
 			}
 		}
