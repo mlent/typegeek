@@ -1,12 +1,7 @@
 requirejs.config({
-	'baseUrl': '../',
+	'baseUrl': '/static/js',
 	'paths': {
-		'typegeek': 'src/typegeek'
-	},
-	'shim': {
-		'typegeek': {
-			'exports': 'typegeek'
-		}
+		'typegeek': 'lib/typegeek/src/typegeek'
 	}
 });
 

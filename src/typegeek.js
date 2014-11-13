@@ -1,4 +1,4 @@
-define(['src/dicts/grc'], function(GreekDict) {
+define(['lib/typegeek/src/dicts/grc'], function(GreekDict) {
 	
 	'use strict';
 

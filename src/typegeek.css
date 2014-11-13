@@ -1,3 +1,6 @@
+.typegeek {
+	text-align: center;
+}
 .typegeek input[type="text"] {
 	font-family: -webkit-pictograph, serif;
 	font-size: 36px;
@@ -9,20 +12,20 @@
 .typegeek li {
 	display: inline-block;
 	margin-right: 5px;
-	margin-bottom: 5px;
+	margin-top: 5px;
 }
 .typegeek a {
+	box-sizing: border-box;
 	text-decoration: none;
 	background-color: #444;
-	padding: 5px 10px 10px 10px;
 	color: #F5F5F5;
 	font-family: -webkit-pictograph, serif;
 	font-size: 26px;
 	border-radius: 2px;
 	position: relative;
 	display: inline-block;
-	width: 20px;
-	height: 30px;
+	width: 42px;
+	height: 45px;
 	text-align: center;
 }
 .typegeek a:hover {
@@ -30,7 +33,7 @@
 }
 .typegeek a span {
 	position: absolute;
-	left: 3px;
+	left: 5px;
 	bottom: 1px;
 	font-size: 12px;
 	font-family: sans-serif;
