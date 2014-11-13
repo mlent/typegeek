@@ -65,11 +65,12 @@ define(['lib/typegeek/src/dicts/grc'], function(GreekDict) {
 		var code = e.keyCode || e.target.dataset.keycode;
 
 		// If they're escaping, clear menu and return
+		// TODO: Deal with Ctrl being held down
 		if (code === 27) {
 			this.clearUI();
 			return;
 		}
-
+		
 		// It's not a key we capture, so return
 		var name = this.dict.keyCodes[code];
 		if (!name) return;
@@ -108,9 +109,15 @@ define(['lib/typegeek/src/dicts/grc'], function(GreekDict) {
 			return;
 		}
 
-		// Type something!
-		this.el.value = this.el.value ? this.el.value += key : key;
+		// Type something! Get cursor position, splice in input, re-focus cursor
+		var pos = this.getCursorPosition(this.el);
+		this.el.value = this.spliceString(this.el.value, key, pos);
+
+		// Set the cursor after the newly typed character 
+		this.setCursorPosition(this.el, pos + 1);
+
 		this.clearUI();
+
 		return false;
 	};
 
@@ -155,6 +162,57 @@ define(['lib/typegeek/src/dicts/grc'], function(GreekDict) {
 		});
 
 		return options;
+	};
+
+	// UTILITY FUNCTIONS
+
+	/**
+	 * Find out where the user's cursor is in the text field. Takes a DOM node as argument.
+	 */
+	typegeek.prototype.getCursorPosition = function(field) {
+		var pos = 0;
+
+		if (document.selection) {
+			field.focus();
+
+			var selection = document.selection.createRange();
+			selection.moveStart('character', -field.value.length);
+			pos = selection.text.length;
+		}
+		else if (typeof field.selectionStart === 'number') {
+			pos = field.selectionStart;
+		}
+
+		return (pos);
+	};
+
+	/**
+	 * Set cursor position on text field. Takes DOM node and position (int) as arguments.
+	 */
+	typegeek.prototype.setCursorPosition = function(field, pos) {
+		
+		if (field.createTextRange) {
+			var textRange = field.createTextRange();
+			textRange.collapse(true);
+			textRange.moveEnd('character', pos);
+			textRange.moveStart('character', pos);
+			textRange.select();
+			return true;
+		}
+		else if (field.setSelectionRange) {
+			field.setSelectionRange(pos, pos);
+			return true;
+		}
+
+		return false;
+
+	};
+
+	/**
+	 * Function for splicing in a newly typed character into the input field string.
+	 */ 
+	typegeek.prototype.spliceString = function(string, newChars, pos) {
+		return string.slice(0, pos) + newChars + string.slice(pos, string.length);
 	};
 
 	/**
